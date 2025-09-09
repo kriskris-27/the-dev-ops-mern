@@ -15,3 +15,20 @@ export const addTodo = async(req:Request,res:Response) =>{
     res.json(todo)
 }
 
+export const toggleTodo  = async(req:Request,res:Response) =>{
+    const {id} = req.params
+    const todo  = await Todo.findById(id);
+
+    if(!todo) return res.status(404).json({msg:"Todo not found"});
+
+    todo.iscompleted = !todo.iscompleted;
+    await todo.save()
+
+    res.json(todo)
+}
+
+export const deleteTodo = async(req:Request,res:Response) =>{
+    const {id} = req.params;
+    await Todo.findByIdAndDelete(id);
+    res.json({message:"Todo deleted"});
+}
