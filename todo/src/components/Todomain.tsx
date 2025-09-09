@@ -1,136 +1,68 @@
-import type Data from "../types/Todotype"
-import { Tododata } from "../services/Tododata"
-import { useState } from "react"
+import { useEffect, useState } from "react";
+import api from "../services/api";
+import type Data from "../types/Todotype";
 
-export const Todomain = () => {
-  const [todos, setTodos] = useState<Data[]>(Tododata);
-  const [inp, setInp] = useState<string>("");
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [edittext, setEdittext] = useState<string>("");
+const TodoList = () => {
+  const [todos, setTodos] = useState<Data[]>([]);
+  const [inp, setInp] = useState("");
 
-  // ✅ toggle todo
-  const toggletodo = (id: number) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    )
-  }
+  useEffect(() => {
+    api.get("/todo").then(res => setTodos(res.data));
+  }, []);
 
-  // ✅ delete todo
-  const todoDelete = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id))
-  }
-
-  // ✅ add todo
-  const addValue = () => {
+  const addTodo = async () => {
     if (!inp.trim()) return;
-    const temp = {
-      id: Date.now(),
-      title: inp,
-      completed: false
-    }
-    setTodos([...todos, temp])
-    setInp('')
-  }
+    const res = await api.post("/todo", { task: inp });
+    setTodos([...todos, res.data]);
+    setInp("");
+  };
 
-  // ✅ save edited todo
-  const saveText = () => {
-    if (!edittext.trim()) return
-    setTodos(todos.map((todo) =>
-      todo.id === editingId ? { ...todo, title: edittext } : todo
-    ))
-    setEditingId(null)
-    setEdittext('')
-  }
+  const toggleTodo = async (id: string) => {
+    const res = await api.patch(`/todo/${id}`);
+    setTodos(todos.map(t => (t._id === id ? res.data : t)));
+  };
 
-  // ✅ cancel editing
-  const cancelEdit = () => {
-    setEditingId(null)
-    setEdittext('')
-  }
+  const deleteTodo = async (id: string) => {
+    await api.delete(`/todo/${id}`);
+    setTodos(todos.filter(t => t._id !== id));
+  };
 
   return (
-    <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-2xl">
-      <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">📋 Todo List</h1>
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow rounded-lg">
+      <h1 className="text-2xl font-bold mb-4">📋 Todo List</h1>
 
-      {/* input + button */}
       <div className="flex gap-2 mb-4">
         <input
-          placeholder="Enter the task"
           value={inp}
           onChange={(e) => setInp(e.target.value)}
-          className="flex-1 border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Enter todo..."
+          className="flex-1 border px-3 py-2 rounded"
         />
-        <button
-          type="submit"
-          onClick={addValue}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
+        <button onClick={addTodo} className="bg-blue-500 text-white px-4 py-2 rounded">
           Add
         </button>
       </div>
 
-      {/* todos list */}
-      <ul className="space-y-3">
-        {todos && todos.map((todo) => (
-          <li
-            key={todo.id}
-            className="flex items-center justify-between bg-gray-50 p-3 rounded-lg shadow-sm hover:shadow-md transition"
-          >
-            {editingId === todo.id ? (
-              <div className="flex-1 flex gap-2">
-                <input
-                  placeholder="Start editing..."
-                  value={edittext}
-                  onChange={(e) => setEdittext(e.target.value)}
-                  className="flex-1 border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-
-                <button
-                  onClick={saveText}
-                  type="submit"
-                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg"
-                >
-                  Save
-                </button>
-
-                <button
-                  onClick={cancelEdit}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-lg"
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <>
-                <span
-                  onClick={() => toggletodo(todo.id)}
-                  className={`flex-1 cursor-pointer ${todo.completed ? "line-through text-gray-400" : "text-gray-800"}`}
-                >
-                  {todo.title}
-                </span>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => { setEditingId(todo.id); setEdittext(todo.title); }}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg"
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() => todoDelete(todo.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </>
-            )}
+      <ul className="space-y-2">
+        {todos.map(todo => (
+          <li key={todo._id} className="flex justify-between items-center">
+            <span
+              onClick={() => toggleTodo(todo._id)}
+              className={`cursor-pointer ${todo.iscompleted ? "line-through text-gray-500" : ""}`}
+            >
+              {todo.task}
+            </span>
+            <button
+              onClick={() => deleteTodo(todo._id)}
+              className="bg-red-500 text-white px-3 py-1 rounded"
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
     </div>
-  )
-}
+  );
+};
+
+export default TodoList;

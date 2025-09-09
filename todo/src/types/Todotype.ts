@@ -1,5 +1,6 @@
-export default interface Data{
-    id:number,
-    title:string,
-    completed:boolean
+export default interface Data {
+  _id: string,
+  task: string,
+  iscompleted: boolean,
+  sessionId: string
 }

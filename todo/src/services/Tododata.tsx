@@ -1,8 +1,7 @@
 import type Data from "../types/Todotype";
 
-
-const dataum:Data[] = [];
+const dataum: Data[] = [];
 
 export const Tododata = () => {
-  return  dataum;
-}
+  return dataum;
+};

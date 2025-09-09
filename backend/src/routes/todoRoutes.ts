@@ -9,4 +9,6 @@ router.post("/",addTodo);
 
 router.patch("/:id",toggleTodo);
 
-router.delete("/id",deleteTodo);
+router.delete("/:id",deleteTodo);
+
+export default router;
