@@ -1,15 +1,17 @@
-import mongoose, { Document,Schema } from "mongoose";
+import mongoose,{Document,Schema} from "mongoose";
 
 export interface ITodo extends Document {
-    todo_id : string,
-    task : string,
-    iscompleted : boolean
-}
+    id:string,
+    task:string,
+    iscompleted:boolean
+    sessionId:string
+} 
 
-const TodoSchema : Schema = new Schema({
-    todo_id : {type:String , required:true},
-    task:{type:String , required:true},
-    iscompleted:{type:Boolean , required:true}
+export const TodoSchema : Schema = new Schema({
+    id:{type:String,required:true},
+    task:{type:String,required:true},
+    iscompleted:{type:Boolean,required:true},
+    sessionId:{type:String,required:true}
 })
 
-export default mongoose.model<ITodo>('Todo',TodoSchema)
+export default mongoose.model<ITodo>("TOdo",TodoSchema);
