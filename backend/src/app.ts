@@ -1,9 +1,10 @@
     import express from "express";
     import cookieParser from "cookie-parser";
-    import {v4 as uuid} from "uuid";
+    import { randomUUID } from "crypto";
     import todoRoute from "../src/routes/todoRoutes";
-    const app = express();
     import cors from "cors"
+
+    const app = express();
     app.use(express.json())
     app.use(cookieParser())
 
@@ -14,7 +15,7 @@
 
     app.use((req,res,next)=>{
         if(!req.cookies.sessionId){
-            const sessionId = uuid();
+            const sessionId = randomUUID();
             res.cookie("sessionId", sessionId, {
                 httpOnly:true,
                 maxAge:1000*60*60*7
