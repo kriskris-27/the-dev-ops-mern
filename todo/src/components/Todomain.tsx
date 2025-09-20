@@ -7,24 +7,48 @@ const TodoList = () => {
   const [inp, setInp] = useState("");
 
   useEffect(() => {
-    api.get("/todo").then(res => setTodos(res.data));
+    api.get("/todo").then(res => {
+      // Handle new API response format
+      const responseData = res.data.data || res.data;
+      if (responseData.todos) {
+        setTodos(responseData.todos);
+      } else {
+        setTodos(responseData);
+      }
+    }).catch(err => {
+      console.error("Failed to fetch todos:", err);
+    });
   }, []);
 
   const addTodo = async () => {
     if (!inp.trim()) return;
-    const res = await api.post("/todo", { task: inp });
-    setTodos([...todos, res.data]);
-    setInp("");
+    try {
+      const res = await api.post("/todo", { task: inp });
+      const newTodo = res.data.data || res.data;
+      setTodos([...todos, newTodo]);
+      setInp("");
+    } catch (err) {
+      console.error("Failed to add todo:", err);
+    }
   };
 
   const toggleTodo = async (id: string) => {
-    const res = await api.patch(`/todo/${id}`);
-    setTodos(todos.map(t => (t._id === id ? res.data : t)));
+    try {
+      const res = await api.patch(`/todo/${id}`);
+      const updatedTodo = res.data.data || res.data;
+      setTodos(todos.map(t => (t._id === id ? updatedTodo : t)));
+    } catch (err) {
+      console.error("Failed to toggle todo:", err);
+    }
   };
 
   const deleteTodo = async (id: string) => {
-    await api.delete(`/todo/${id}`);
-    setTodos(todos.filter(t => t._id !== id));
+    try {
+      await api.delete(`/todo/${id}`);
+      setTodos(todos.filter(t => t._id !== id));
+    } catch (err) {
+      console.error("Failed to delete todo:", err);
+    }
   };
 
   return (
