@@ -88,6 +88,7 @@ const App: React.FC = () => {
         
         <h1 className="text-3xl font-bold underline">
       Hello world!
+      testing tailwind
     </h1>   
         <h3>Features</h3>
         <ul>
