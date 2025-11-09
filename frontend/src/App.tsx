@@ -103,15 +103,7 @@ const HomePage: React.FC = () => {
           <li className="rounded-md border border-slate-200 bg-slate-50 p-4">
             ✅ CORS Configuration
           </li>
-          <li className="rounded-md border border-slate-200 bg-slate-50 p-4">
-            ✅ Health Check Endpoint
-          </li>
-          <li className="rounded-md border border-slate-200 bg-slate-50 p-4">
-            ✅ Simple API Communication
-          </li>
-          <li className="rounded-md border border-slate-200 bg-slate-50 p-4">
-            ✅ Tailwind CSS utilities ready to use
-          </li>
+          
         </ul>
       </section>
     </div>
