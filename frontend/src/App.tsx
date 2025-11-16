@@ -103,7 +103,6 @@ const HomePage: React.FC = () => {
           <li className="rounded-md border border-slate-200 bg-slate-50 p-4">
             ✅ CORS Configuration
           </li>
-          
         </ul>
       </section>
     </div>
